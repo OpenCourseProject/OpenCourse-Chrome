@@ -19,7 +19,7 @@ chrome.storage.sync.get(['api_username','api_key'], function(result) {
   api_key = result['api_key'];
   // If not, let's try and grab it from the logged-in instance
   if (api_username == null) {
-    var url = 'http://opencourseproject.com/api/username/'
+    var url = 'https://opencourseproject.com/api/username/'
     chrome.runtime.sendMessage({
       method: 'GET',
       action: 'xhttp',
@@ -36,7 +36,7 @@ chrome.storage.sync.get(['api_username','api_key'], function(result) {
     begin();
   }
   if (api_key == null) {
-    var url = 'http://opencourseproject.com/api/key/'
+    var url = 'https://opencourseproject.com/api/key/'
     chrome.runtime.sendMessage({
       method: 'GET',
       action: 'xhttp',
@@ -67,7 +67,7 @@ function begin() {
       // Find the current term on the page header
       var termName = headers[2];
       // Lookup the term to get the matching OCP resource
-      var url = 'http://opencourseproject.com/api/v1/term/?name=' + termName
+      var url = 'https://opencourseproject.com/api/v1/term/?name=' + termName
       chrome.runtime.sendMessage({
         method: 'GET',
         action: 'xhttp',
@@ -78,7 +78,7 @@ function begin() {
         // Inject the Schedule button
         addScheduleButton();
         // Get the user's schedule for this term
-        var url = 'http://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key + '&term__name=' + term.name
+        var url = 'https://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key + '&term__name=' + term.name
         chrome.runtime.sendMessage({
           method: 'GET',
           action: 'xhttp',
@@ -96,7 +96,7 @@ function begin() {
               var crn = $(table.find(".dddefault")[1]).text();
               liveSchedule.push(crn)
               // Add a link to the header
-              header.html('<div class="tbs"><a href="http://opencourseproject.com/course/' + term.value + '/' + crn + '/">' + header.text() + '</a></div>');
+              header.html('<div class="tbs"><a href="https://opencourseproject.com/course/' + term.value + '/' + crn + '/">' + header.text() + '</a></div>');
               // Is this course on OCP?
               var found = false;
               $.each(ocpSchedule, function(index, value) {
@@ -113,7 +113,7 @@ function begin() {
           // Add button for individual courses
           $(".add-button").click(function() {
             var crn = $(this).data('crn');
-            var url = 'http://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key
+            var url = 'https://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key
             chrome.runtime.sendMessage({
               method: 'POST',
               action: 'xhttp',
@@ -143,7 +143,7 @@ function begin() {
       // Find the current term on the page header
       var termName = headers[2];
       // Lookup the term to get the matching OCP resource
-      var url = 'http://opencourseproject.com/api/v1/term/?name=' + termName
+      var url = 'https://opencourseproject.com/api/v1/term/?name=' + termName
       chrome.runtime.sendMessage({
         method: 'GET',
         action: 'xhttp',
@@ -154,7 +154,7 @@ function begin() {
         // Inject the schedule button
         addScheduleButton();
         // Get the user's schedule for this term
-        var url = 'http://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key + '&term__name=' + term.name
+        var url = 'https://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key + '&term__name=' + term.name
         chrome.runtime.sendMessage({
           method: 'GET',
           action: 'xhttp',
@@ -173,7 +173,7 @@ function begin() {
 // Schedule button
 function addScheduleButton() {
   var point = $($(".datadisplaytable")[0]);
-  var button = '<div class="tbs"><a href="http://opencourseproject.com/schedule/?term=' + term.value + '"><button class="btn btn-success btn-lg">View schedule on OpenCourse <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></button></a></div>';
+  var button = '<div class="tbs"><a href="https://opencourseproject.com/schedule/?term=' + term.value + '"><button class="btn btn-success btn-lg">View schedule on OpenCourse <span class="glyphicon glyphicon-share-alt" aria-hidden="true"></span></button></a></div>';
   $(point).before(button);
 }
 
