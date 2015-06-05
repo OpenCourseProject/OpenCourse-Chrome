@@ -1,10 +1,12 @@
 OpenCourse for Chrome
 =============
 
-This is the browser plugin for the Open Course Project website (http://opencourseproject.com) which integrates the third-party scheduling and course information provided there on the official CNU Live website.
+This is the browser plugin for the Open Course Project website (https://opencourseproject.com) which integrates the third-party scheduling and course information provided there on the official CNU Live website.
 
 Installation
 -------
+
+Find the plugin on the [Google Chrome Webstore](https://chrome.google.com/webstore/detail/opencourse/iklkhbogomjhkakapieafljbldmhelep) and install!
 
 License
 -------
