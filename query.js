@@ -6,7 +6,8 @@
 *  data   : data to send in a POST request
 *  headers: custom request headers
 *
-* The callback function is called upon completion of the request */
+* The callback function is called upon completion of the request
+*/
 chrome.runtime.onMessage.addListener(function(request, sender, callback) {
   if (request.action == "xhttp") {
     var xhttp = new XMLHttpRequest();
@@ -14,13 +15,14 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
     var headers = request.headers;
 
     xhttp.onload = function() {
-      callback(xhttp.responseText);
+      callback(this);
     };
     xhttp.onerror = function() {
       // Do whatever you want on error. Don't forget to invoke the
       // callback to clean up the communication port.
       callback();
     };
+
     xhttp.open(method, request.url, true);
 
     if (headers) {
@@ -28,8 +30,9 @@ chrome.runtime.onMessage.addListener(function(request, sender, callback) {
         xhttp.setRequestHeader(key, headers[key]);
       }
     }
-    
+
     xhttp.send(request.data);
+
     return true; // prevents the callback from being called too early on return
   }
 });
