@@ -19,40 +19,36 @@ var liveSchedule = [];
 
 // Get the API username
 var url = 'https://opencourseproject.com/api/username/'
-chrome.runtime.sendMessage({
-  method: 'GET',
-  action: 'xhttp',
-  url: url,
-  data: ''
-}, function(response) {
+var user_request = new XMLHttpRequest();
+user_request.open("GET", url, true);
+user_request.onload = function() {
   // Check if we've got a valid username
-  var valid = username_re.test(response.responseText)
+  var valid = username_re.test(this.responseText)
   if (valid) {
-    api_username = response.responseText;
+    api_username = this.responseText;
     // Get the API key
     url = 'https://opencourseproject.com/api/key/'
-    chrome.runtime.sendMessage({
-      method: 'GET',
-      action: 'xhttp',
-      url: url,
-      data: ''
-    }, function(response) {
+    var key_request = new XMLHttpRequest();
+    key_request.open("GET", url, true);
+    key_request.onload = function() {
       // Check if we've got a valid key
-      var valid = key_re.test(response.responseText)
+      var valid = key_re.test(this.responseText)
       if (valid) {
-        api_key = response.responseText;
+        api_key = this.responseText;
         // Start the API interaction
         begin();
       } else {
         // Something's wrong :(
         addLoginButton('Account Error! Log in again');
       }
-    });
+    };
+    key_request.send();
   } else {
     // We're not logged in, add a button to do so
     addLoginButton('Click to login on OpenCourse');
   }
-});
+};
+user_request.send();
 
 function begin() {
   if (window.location.href == DETAIL_SCHEDULE_URL) {
@@ -66,24 +62,21 @@ function begin() {
     var termName = headers[2];
     // Lookup the term to get the matching OCP resource
     var url = 'https://opencourseproject.com/api/v1/term/?name=' + termName
-    chrome.runtime.sendMessage({
-      method: 'GET',
-      action: 'xhttp',
-      url: url,
-      data: ''
-    }, function(response) {
-      term = JSON.parse(response.responseText).objects[0];
+    var term_request = new XMLHttpRequest();
+    term_request.open("GET", url, true);
+    term_request.setRequestHeader("Accept", "application/json");
+    term_request.onload = function() {
+      term = JSON.parse(this.responseText).objects[0];
       // Inject the Schedule button
       addScheduleButton();
       // Get the user's schedule for this term
-      var url = 'https://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key + '&term__name=' + term.name
-      chrome.runtime.sendMessage({
-        method: 'GET',
-        action: 'xhttp',
-        url: url,
-        data: ''
-      }, function(response) {
-        ocpSchedule = JSON.parse(response.responseText).objects;
+      var url = 'https://opencourseproject.com/api/v1/schedule/?term__name=' + term.name
+      var schedule_request = new XMLHttpRequest();
+      schedule_request.open("GET", url, true);
+      schedule_request.setRequestHeader("Authorization", "ApiKey " + api_username + ":" + api_key);
+      schedule_request.setRequestHeader("Accept", "application/json");
+      schedule_request.onload = function() {
+        ocpSchedule = JSON.parse(this.responseText).objects;
         // Look at all the term's courses
         var arr = $(".datadisplaytable");
         $.each( arr, function( index, value ) {
@@ -111,20 +104,21 @@ function begin() {
         // Add button for individual courses
         $(".add-button").click(function() {
           var crn = $(this).data('crn');
-          var url = 'https://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key
-          chrome.runtime.sendMessage({
-            method: 'POST',
-            action: 'xhttp',
-            url: url,
-            headers: {"Content-Type": "application/json"},
-            data: '{"term": "' + term.resource_uri + '", "course_crn": "' + crn + '"}'
-          }, function(response) {
-            // Added, reload the page
+          var url = 'https://opencourseproject.com/api/v1/schedule/'
+          var add_request = new XMLHttpRequest();
+          add_request.open("POST", url, true);
+          add_request.setRequestHeader("Content-Type", "application/json");
+          add_request.setRequestHeader("Authorization", "ApiKey " + api_username + ":" + api_key);
+          add_request.setRequestHeader("Accept", "application/json");
+          add_request.onload = function() {
             window.location.reload();
-          });
+          };
+          add_request.send('{"term": "' + term.resource_uri + '", "course_crn": "' + crn + '"}');
         });
-      });
-    });
+      };
+      schedule_request.send();
+    };
+    term_request.send();
   } else if (window.location.href == ADD_DROP_URL || window.location.href == ADD_DROP_URL_CHECK_PIN) {
     // Verify we're past alternate PIN
     var title = $($('.pldefault').find('h2')[0]).text();
@@ -142,28 +136,25 @@ function begin() {
     var termName = headers[2];
     // Lookup the term to get the matching OCP resource
     var url = 'https://opencourseproject.com/api/v1/term/?name=' + termName
-    chrome.runtime.sendMessage({
-      method: 'GET',
-      action: 'xhttp',
-      url: url,
-      data: ''
-    }, function(response) {
-      term = JSON.parse(response.responseText).objects[0];
+    var term_request = new XMLHttpRequest();
+    term_request.open("GET", url, true);
+    term_request.setRequestHeader("Accept", "application/json");
+    term_request.onload = function() {
+      term = JSON.parse(this.responseText).objects[0];
       // Inject the schedule button
       addScheduleButton();
       // Get the user's schedule for this term
-      var url = 'https://opencourseproject.com/api/v1/schedule/?username=' + api_username + '&api_key=' + api_key + '&term__name=' + term.name
-      chrome.runtime.sendMessage({
-        method: 'GET',
-        action: 'xhttp',
-        url: url,
-        data: ''
-      }, function(response) {
-        ocpSchedule = JSON.parse(response.responseText).objects;
+      var url = 'https://opencourseproject.com/api/v1/schedule/?term__name=' + term.name
+      var schedule_request = new XMLHttpRequest();
+      schedule_request.open("GET", url, true);
+      schedule_request.setRequestHeader("Authorization", "ApiKey " + api_username + ":" + api_key);
+      schedule_request.setRequestHeader("Accept", "application/json");
+      schedule_request.onload = function() {
+        ocpSchedule = JSON.parse(this.responseText).objects;
         // Inject the fill button
         addFillCRNButton();
-      });
-    });
+      };
+    };
   }
 }
 
